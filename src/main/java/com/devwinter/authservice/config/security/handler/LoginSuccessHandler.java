@@ -32,6 +32,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private void createJwtTokenResponse(HttpServletResponse response, TokenInfo tokenInfo) throws IOException {
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
+        response.setHeader("id", tokenInfo.getUserId().toString());
         objectMapper.writeValue(response.getWriter(), JwtTokenResponse.of(tokenInfo));
     }
 }
