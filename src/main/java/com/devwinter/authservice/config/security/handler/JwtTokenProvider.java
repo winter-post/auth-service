@@ -57,6 +57,7 @@ public class JwtTokenProvider {
  
         return TokenInfo.builder()
                 .grantType("Bearer")
+                .userId(principalUser.getUserId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
