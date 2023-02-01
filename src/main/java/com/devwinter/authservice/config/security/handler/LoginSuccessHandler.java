@@ -1,6 +1,6 @@
 package com.devwinter.authservice.config.security.handler;
 
-import antlr.Token;
+import com.devwinter.authservice.config.security.JwtTokenProvider;
 import com.devwinter.authservice.config.security.dto.JwtTokenResponse;
 import com.devwinter.authservice.config.security.model.PrincipalUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,13 +27,22 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-        createJwtTokenResponse(response, tokenInfo);
+        createJwtTokenResponse(response, tokenInfo, getUserId(authentication));
     }
 
-    private void createJwtTokenResponse(HttpServletResponse response, TokenInfo tokenInfo) throws IOException {
+    private void createJwtTokenResponse(HttpServletResponse response, TokenInfo tokenInfo, String userId) throws IOException {
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
-        response.setHeader("id", tokenInfo.getUserId().toString());
+        if(!Objects.isNull(userId)) {
+            response.setHeader("User-Id", userId);
+        }
         objectMapper.writeValue(response.getWriter(), JwtTokenResponse.of(tokenInfo));
+    }
+
+    private String getUserId(Authentication authentication) {
+        if(authentication.getPrincipal() instanceof PrincipalUser) {
+            return ((PrincipalUser) authentication.getPrincipal()).getUserId().toString();
+        }
+        return null;
     }
 }
