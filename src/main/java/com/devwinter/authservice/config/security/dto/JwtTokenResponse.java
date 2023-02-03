@@ -1,6 +1,7 @@
 package com.devwinter.authservice.config.security.dto;
 
-import com.devwinter.authservice.config.security.handler.TokenInfo;
+import com.devwinter.authservice.config.jwt.TokenInfo;
+import com.devwinter.authservice.presentation.dto.BaseResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,11 +16,11 @@ public class JwtTokenResponse {
     private String grantType;
     private String refreshToken;
 
-    public static JwtTokenResponse of(TokenInfo jwtTokenInfoDto) {
-        return JwtTokenResponse.builder()
-                               .accessToken(jwtTokenInfoDto.getAccessToken())
-                               .grantType(jwtTokenInfoDto.getGrantType())
-                               .refreshToken(jwtTokenInfoDto.getRefreshToken())
-                               .build();
+    public static BaseResponse<JwtTokenResponse> success(TokenInfo jwtTokenInfoDto) {
+        return BaseResponse.success(JwtTokenResponse.builder()
+                                                    .accessToken(jwtTokenInfoDto.getAccessToken())
+                                                    .grantType(jwtTokenInfoDto.getGrantType())
+                                                    .refreshToken(jwtTokenInfoDto.getRefreshToken())
+                                                    .build(), "로그인에 성공하였습니다.");
     }
 }

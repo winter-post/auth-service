@@ -5,11 +5,15 @@ import com.devwinter.authservice.config.security.converters.ProviderUserRequest;
 import com.devwinter.authservice.config.security.model.PrincipalUser;
 import com.devwinter.authservice.config.security.model.ProviderUser;
 import com.devwinter.authservice.domain.User;
+import com.devwinter.authservice.domain.exception.UserErrorCode;
+import com.devwinter.authservice.domain.exception.UserException;
 import com.devwinter.authservice.domain.repository.UserQueryRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import static com.devwinter.authservice.domain.exception.UserErrorCode.USER_NOT_FOUND;
 
 @Service
 public class CustomUserService extends AbstractOAuth2UserService implements UserDetailsService {
@@ -26,7 +30,7 @@ public class CustomUserService extends AbstractOAuth2UserService implements User
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         User user = userQueryRepository.findByEmail(email)
-                                       .orElseThrow(() -> new UsernameNotFoundException("이메일이 존재하지 않습니다."));
+                                       .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
         ProviderUserRequest providerUserRequest = new ProviderUserRequest(user);
         ProviderUser providerUser = super.providerUser(providerUserRequest);
