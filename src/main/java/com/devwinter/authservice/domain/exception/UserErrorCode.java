@@ -10,7 +10,8 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public enum UserErrorCode {
 
-    USER_NOT_FOUND(UNAUTHORIZED, "회원이 존재하지 않습니다.")
+    USER_NOT_FOUND(UNAUTHORIZED, "회원이 존재하지 않습니다."),
+    REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "Refresh Token이 존재하지 않습니다.")
 
     ;
 

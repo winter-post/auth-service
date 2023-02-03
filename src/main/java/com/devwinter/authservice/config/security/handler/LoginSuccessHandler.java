@@ -5,8 +5,10 @@ import com.devwinter.authservice.config.jwt.TokenInfo;
 import com.devwinter.authservice.config.redis.RedisRepository;
 import com.devwinter.authservice.config.security.dto.JwtTokenErrorResponse;
 import com.devwinter.authservice.config.security.dto.JwtTokenResponse;
+import com.devwinter.authservice.config.security.enums.AuthHeader;
 import com.devwinter.authservice.config.security.model.PrincipalUser;
 import com.devwinter.authservice.presentation.dto.BaseResponse;
+import com.devwinter.authservice.utils.AuthenticationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.devwinter.authservice.config.security.enums.AuthHeader.USER_ID;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -40,7 +43,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             tokenInfo = jwtTokenProvider.generateToken(authentication);
 
             // redis refresh token save
-            redisRepository.saveRefreshToken(authentication, tokenInfo);
+            PrincipalUser principalUser = AuthenticationUtil.getPrincipalUser(authentication);
+            redisRepository.saveRefreshToken(principalUser.getEmail(), tokenInfo);
 
             // success response
             successResponse(response, tokenInfo, getUserId(authentication));
@@ -56,7 +60,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setCharacterEncoding("utf-8");
 
         if(!Objects.isNull(userId)) {
-            response.setHeader("User-Id", userId);
+            response.setHeader(USER_ID.toString(), userId);
         }
 
         BaseResponse<JwtTokenResponse> jwtTokenResponse = JwtTokenResponse.success(tokenInfo);
