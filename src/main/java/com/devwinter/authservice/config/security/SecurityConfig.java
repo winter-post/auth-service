@@ -44,14 +44,10 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         // TODO: API Gateway가 만약 scale out 할 경우 동적으로 IP Voter를 사용해서 IP 검사를 해야할 것 같다.
-//        http
-//                .authorizeRequests()
-//                .antMatchers("/**")
-//                .access("hasIpAddress('192.168.0.2')");
         http
                 .authorizeRequests()
                 .antMatchers("/**")
-                .permitAll();
+                .access("hasIpAddress('192.168.0.2')");
 
         http
                 .addFilterBefore(authenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class);

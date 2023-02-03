@@ -1,6 +1,7 @@
 package com.devwinter.authservice.config.jwt;
 
 import com.devwinter.authservice.config.security.model.PrincipalUser;
+import com.devwinter.authservice.utils.AuthenticationUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -38,7 +39,7 @@ public class JwtTokenProvider {
                                            .map(GrantedAuthority::getAuthority)
                                            .collect(Collectors.joining(","));
 
-        PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
+        PrincipalUser principalUser = AuthenticationUtil.getPrincipalUser(authentication);
 
         long now = (new Date()).getTime();
 
@@ -68,4 +69,5 @@ public class JwtTokenProvider {
                         .refreshTokenExpirationTime(this.refreshTokenValidTime)
                         .build();
     }
+
 }
