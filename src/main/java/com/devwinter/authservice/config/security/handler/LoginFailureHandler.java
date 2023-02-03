@@ -1,10 +1,11 @@
 package com.devwinter.authservice.config.security.handler;
 
-import com.devwinter.authservice.config.security.dto.ErrorResponse;
+import com.devwinter.authservice.domain.exception.UserErrorCode;
+import com.devwinter.authservice.domain.exception.UserException;
+import com.devwinter.authservice.presentation.dto.BaseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -30,11 +31,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                                                   .code(HttpStatus.UNAUTHORIZED.toString())
-                                                   .message("인증에 실패하였습니다.")
-                                                   .build();
-
-        objectMapper.writeValue(response.getWriter(), errorResponse);
+        UserErrorCode userErrorCode = ((UserException) exception.getCause()).getUserErrorCode();
+        objectMapper.writeValue(response.getWriter(), BaseResponse.error(userErrorCode));
     }
 }

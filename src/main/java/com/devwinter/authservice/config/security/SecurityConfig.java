@@ -34,16 +34,24 @@ public class SecurityConfig {
         AuthenticationManager authenticationManager = authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
 
         http
-                .formLogin().disable()
-                .httpBasic().disable()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .formLogin()
+                .disable()
+                .httpBasic()
+                .disable()
+                .csrf()
+                .disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         // TODO: API Gateway가 만약 scale out 할 경우 동적으로 IP Voter를 사용해서 IP 검사를 해야할 것 같다.
+//        http
+//                .authorizeRequests()
+//                .antMatchers("/**")
+//                .access("hasIpAddress('192.168.0.2')");
         http
                 .authorizeRequests()
                 .antMatchers("/**")
-                .access("hasIpAddress('192.168.0.2')");
+                .permitAll();
 
         http
                 .addFilterBefore(authenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class);
